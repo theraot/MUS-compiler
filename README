@@ -52,3 +52,21 @@ Here's a C major chord in the new MUS.
 	   { tag: 'par',
 	     left: { tag: 'note', pitch: 'e4', dur: 250 },
 	     right: { tag: 'note', pitch: 'g4', dur: 250 } } }
+
+Add the ability to specify rests in songs. Rests are like notes, but they have no pitch, just a duration. Here's a rest:
+
+	{ tag: 'rest', duration: 100 }
+
+(And) we'll modify the NOTE language instead of the MUS language. Suppose we modified the NOTE language to store MIDI note numbers for pitches. Now a chord in NOTE looks like:
+
+	[ { tag: 'note', pitch: 60, start: 0, dur: 250 },
+	  { tag: 'note', pitch: 64, start: 0, dur: 250 },
+	  { tag: 'note', pitch: 67, start: 0, dur: 250 } ]
+
+The chord would previously have had c4, e4, and g4 as the pitches but now has 60, 64, and 67. Here ( http://www.phys.unsw.edu.au/jw/notes.html ) is a chart of MIDI note numbers and pitches.
+
+Add the ability to repeat sections of a song multiple times. A repeat section has a section to repeat and a count of how many times to repeat it. Here's a repeat of a single note.
+
+	{ tag: 'repeat',
+	  section: { tag: 'note', pitch: 'c4', dur: 250 },
+	  count: 3 }

@@ -93,6 +93,7 @@
 			function demo()
 			{
 				var input = jsonParse(document.getElementById("input").value);
+				document.getElementById("input").value = SerializeObject(input, '    ');
 				document.getElementById("output").innerHTML = SerializeObject(compile(input), '    ');
 			}
 		</script>

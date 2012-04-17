@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>
+			test
+		</title>
+		<script type="text/javascript" src="MUS-compiler.js"></script>
+		<!-- hope they don't move it anytime soon -->
+		<script type="text/javascript" src="http://json-sans-eval.googlecode.com/svn/trunk/src/json_sans_eval.js"></script>
+		<script type="text/javascript">
+			
+			//taken from http://stackoverflow.com/a/171698/402022 by PhiLho
+			//changed ' to "
+			
+			function SerializeObject(obj, indentValue)
+			{
+				var hexDigits = "0123456789ABCDEF";
+				function ToHex(d)
+				{
+					return hexDigits[d >> 8] + hexDigits[d & 0x0F];
+				}
+				function Escape(string)
+				{
+					return string.replace(
+						/[\x00-\x1F"\\]/g,
+						function (x)
+						{
+							if (x == "\"" || x == "\\") return "\\" + x;
+							return "\\x" + ToHex(String.charCodeAt(x, 0));
+						}
+					)
+				}
+				var indent;
+				if (indentValue == null)
+				{
+					indentValue = "";
+					indent = ""; // or " "
+				}
+				else
+				{
+					indent = "\n";
+				}
+				return GetObject(obj, indent).replace(/,$/, "");
+
+				function GetObject(obj, indent)
+				{
+					if (typeof obj == 'string')
+					{
+						return "\"" + Escape(obj) + "\",";
+					}
+					if (obj instanceof Array)
+					{
+						result = indent + "[";
+						for (var i = 0; i < obj.length; i++)
+						{
+							result += indent + indentValue +
+							GetObject(obj[i], indent + indentValue);
+						}
+						result += indent + "],";
+						return result;
+					}
+					var result = "";
+					if (typeof obj == 'object')
+					{
+						result += indent + "{";
+						for (var property in obj)
+						{
+							result += indent + indentValue + "\"" +
+							Escape(property) + "\" : " +
+							GetObject(obj[property], indent + indentValue);
+						}
+						result += indent + "},";
+					}
+					else
+					{
+						result += obj + ",";
+					}
+					return result.replace(/,(\n?\s*)([\]}])/g, "$1$2");
+				}
+			}
+			
+			function load()
+			{
+				var input = { tag: 'par',
+							  left: { tag: 'note', pitch: 'c4', dur: 250 },
+							  right:
+							   { tag: 'par',
+								 left: { tag: 'note', pitch: 'e4', dur: 250 },
+								 right: { tag: 'note', pitch: 'g4', dur: 250 } } };
+				document.getElementById("input").value = SerializeObject(input, '    ');
+			}
+			
+			function demo()
+			{
+				var input = jsonParse(document.getElementById("input").value);
+				document.getElementById("output").innerHTML = SerializeObject(compile(input), '    ');
+			}
+		</script>
+	</head>
+	<body onload="load()">
+		<h1>
+			MUS-compiler test
+		</h1>
+		<h2>Input</h2>
+		<p>
+			This test uses the JSON parser available at <a href="https://code.google.com/p/json-sans-eval/">json-sans-eval</a>.
+		</p>
+		<textarea style="width:90%;height:600px" id="input"></textarea>
+		<br />
+		<input type="button" onclick="demo();" value="Procesar"/>
+		<hr />
+		<h2>Output</h2>
+		<pre id="output"></pre>
+	</body>
+</html>

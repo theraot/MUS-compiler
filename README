@@ -1,0 +1,54 @@
+= MUS =
+
+As explined on http://nathansuniversity.com/ this text is under copyright of Nathan's University, I republish it for educative use only.
+
+MUS is a little made-up language for representing musical notes. Programs in MUS are made up of expressions. The simplest expression is a single note. The language has a syntax, but we'll ignore it for now to avoid dealing with parsing. After being parsed, a single note looks like this.
+
+	{ tag: 'note', pitch: 'c4', dur: 500 }
+
+Every note has a pitch and duration. The pitch is expressed using scientific pitch notation and the duration is specified in milliseconds.
+
+To make melodies, MUS lets you combine two expressions together with the sequence operator to create new expressions. Here is a sequence of two notes.
+
+	{ tag: 'seq',
+	  left: { tag: 'note', pitch: 'c4', dur: 500 },
+	  right: { tag: 'note', pitch: 'e4', dur: 500 } }
+
+The sequence operator means play the expression on the left, then play the expression on the right. The expression on the left or the right could itself be a seq or a note.
+
+What about three notes in a row? Here are the three notes of a C major chord in a row.
+
+	{ tag: 'seq',
+	  left: { tag: 'note', pitch: 'c4', dur: 250 },
+	  right:
+	   { tag: 'seq',
+	     left: { tag: 'note', pitch: 'e4', dur: 250 },
+	     right: { tag: 'note', pitch: 'g4', dur: 500 } } }
+
+Let's write a compiler for MUS. What does a compiler do? A compiler transforms a program from one language (the source language) into an equivalent program in another language (the target language). The most common kind of compiler translates from a high-level language such as C++ into a low-level language such as assembly.
+
+The made-up language NOTE will be our assembly language for music. Programs in NOTE are lists of notes with pitches, start times, and durations. Here is what a few notes in a row looks like.
+
+	[ { tag: 'note', pitch: 'a3', start: 0, dur: 250 },
+	  { tag: 'note', pitch: 'b3', start: 250, dur: 250 },
+	  { tag: 'note', pitch: 'c4', start: 500, dur: 500 } ]
+
+The above program plays the note 'a3' at time 0 for 250 ms. Then at time 250 ms the note 'a3' ends and the note 'b3' starts. At time 500 ms the note 'b3' ends and the last note starts. Finally after 1000 ms the song ends.
+
+If you've been paying close attention you've probably realized that the NOTE language can do things that the MUS language can't do. Look at this NOTE program:
+
+	[ { tag: 'note', pitch: 'a4', start: 0, dur: 500 },
+	  { tag: 'note', pitch: 'd4', start: 0, dur: 500 } ]
+
+It plays two notes that overlap in time. What fun is melody without harmony?
+
+Let's add the ability to play harmonies to the MUS language. We already have the 'seq' operator, now let's add the 'par' operator. Remember that 'seq' means to play left and then play right. The 'par' operator means to play left and also play right simultaneously.
+
+Here's a C major chord in the new MUS.
+
+	{ tag: 'par',
+	  left: { tag: 'note', pitch: 'c4', dur: 250 },
+	  right:
+	   { tag: 'par',
+	     left: { tag: 'note', pitch: 'e4', dur: 250 },
+	     right: { tag: 'note', pitch: 'g4', dur: 250 } } }
